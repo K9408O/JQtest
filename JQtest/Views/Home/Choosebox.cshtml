@@ -35,11 +35,26 @@
     <pre id="jsonResult" class="mt-4 border p-3 bg-light text-dark"></pre>
     
         <script>
+
+            //清除
         $('#clearBtn').click(function () {
             $('input[type="checkbox"]').prop('checked', false); // 取消勾選
             $('#jsonResult').text(''); // 清空顯示區塊
         });
-           
+
+        //監聽checkbox
+        $('input[type="checkbox"]').on('change', function () {
+            const subject = $(this).data('subject');
+            const group = $(`.subject-group[data-subject="${subject}"]`);
+            const checked = group.find('input[type="checkbox"]:checked');
+
+            if (checked.length > 1) {
+                alert(`「${subject}」只能勾選一個！`);
+                // 清除所有該科 checkbox 的勾選
+                group.find('input[type="checkbox"]').prop('checked', false);
+            }
+        });
+        //確認送出
             $('#submitBtn').click(function () {
             let result = {};
             let isValid = true;
@@ -51,11 +66,7 @@
                 const subject = $(this).data('subject');
                 const checked = $(this).find('input[type="checkbox"]:checked');
 
-                if (checked.length > 1) {
-                    alert(`「${subject}」只能勾選一個！`);
-                    checked.prop('checked', false);
-                    isValid = false;
-                } else if (checked.length === 1) {
+            if (checked.length === 1) {
                     result[subject] = checked.val();
                 }
             });
