@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>JQuery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="/css/site.css" rel="stylesheet">
+
+</head>
+<body class="p-4">
+    @{
+        ViewData["Title"] = "Choosebox";
+        string[] subjects = { "國文", "數學", "英文" };
+        string[] options = { "甲", "乙", "丙", "丁" };
+    }
+    <h2>請選擇每科答案（每科僅可勾選一個）</h2>
+
+    @foreach (var subject in subjects)
+    {
+        <div class="subject-group mb-4" data-subject="@subject">
+            <div><strong>@subject</strong></div>
+            @foreach (var opt in options)
+            {
+                <label class="me-2">
+                    <input type="checkbox" value="@opt" data-subject="@subject" />
+                    @opt
+                </label>
+            }
+        </div>
+    }
+    <button id="submitBtn" class="btn btn-primary">送出</button>
+    <button id="clearBtn" class="btn btn-primary">清空</button>
+    @* 下方顯示的區域 *@
+    <pre id="jsonResult" class="mt-4 border p-3 bg-light text-dark"></pre>
+    
+        <script>
+        $('#clearBtn').click(function () {
+            $('input[type="checkbox"]').prop('checked', false); // 取消勾選
+            $('#jsonResult').text(''); // 清空顯示區塊
+        });
+           
+            $('#submitBtn').click(function () {
+            let result = {};
+            let isValid = true;
+
+            // 清除前次錯誤樣式
+            $('.subject-group').removeClass('is-invalid');
+
+            $('.subject-group').each(function () {
+                const subject = $(this).data('subject');
+                const checked = $(this).find('input[type="checkbox"]:checked');
+
+                if (checked.length > 1) {
+                    alert(`「${subject}」只能勾選一個！`);
+                    checked.prop('checked', false);
+                    isValid = false;
+                } else if (checked.length === 1) {
+                    result[subject] = checked.val();
+                }
+            });
+
+            if (isValid) {
+                const jsonStr = JSON.stringify(result, null, 2); 
+                $('#jsonResult').text(jsonStr);
+            } else {
+                $('#jsonResult').text('');
+            }
+        });
+
+        </script>
+
+</body>
+</html>
